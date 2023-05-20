@@ -1,1 +1,3 @@
-raw_data/
+.ipynb_checkpoints
+prompt engineering - yen.ipynb
+.gitignore.DS_Store
