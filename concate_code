@@ -1,0 +1,55 @@
+#CONCATENATE
+
+import pandas as pd
+import os
+
+folder_path = '/Users/mac123/code/finding-conan/open_ai'
+
+data = []
+
+for file in os.listdir(folder_path):
+    if file.endswith('.csv'):
+        file_path = os.path.join(folder_path, file)
+        df = pd.read_csv(file_path)
+        data.append(df)
+
+concatenated_df = pd.concat(data, ignore_index=True)
+
+output_path = '/Users/mac123/code/finding-conan/open_ai/concatenated.csv'
+
+concatenated_df.to_csv(output_path, index=False)
+
+
+
+#Assign 0s and 1s to the Types of Crime
+
+#Without Onehotencoder
+
+crime_columns = ['Homicide', 'Hate Crime - Disability', 'Hate Crime - Gender', 'Hate Crime - Gender Identity', 'Hate Crime - Religious',
+                 'Hate Crime - Sexual orientation', 'Hate Crime - Racial/Ethnicity', 'Hate Crime - Ethnicity', 'Verbal Abuse/Verbal Assault',
+                 'Property Damage', 'Drug Offenses', 'General Assault', 'Sexual Assault', 'Sexual Harassment', 'Property Crimes',
+                 'Domestic Violence', 'Missing Person', 'Traffic Incident', 'General Assault', 'Unclassified']
+
+for index, row in df.iterrows():
+    # Obtener los tipos de crimen del caso actual
+    types_of_crime = row['type_of_crime'].split(", ")
+    
+    for column in crime_columns:
+        df.loc[index, column] = 0
+    
+    for crime in types_of_crime:
+        if crime in crime_columns:
+            df.loc[index, crime] = 1
+
+df.to_csv('concatenated2.csv', index=False)
+
+
+#Dropduplicate
+
+import pandas as pd
+
+data = pd.read_csv('/Users/mac123/code/finding-conan/open_ai/concatenated2.csv')
+
+official_case_id_without_duplicates = data['official_case_id'].drop_duplicates().tolist()
+
+print(official_case_id_without_duplicados)
