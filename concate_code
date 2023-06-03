@@ -52,4 +52,78 @@ data = pd.read_csv('/Users/mac123/code/finding-conan/open_ai/concatenated2.csv')
 
 official_case_id_without_duplicates = data['official_case_id'].drop_duplicates().tolist()
 
-print(official_case_id_without_duplicados)
+print(official_case_id_without_duplicates)
+
+
+====> New Header Time_ (ex.: 	2023-03-29 20:10:14)
+#Standarize Date
+
+dates = df['date']
+
+fixed_dates = []
+
+for date in dates:
+    if '.' in date:
+        parts = date.split('.')
+        if len(parts[0]) == 1:
+            parts[0] = '0' + parts[0]
+        if len(parts[1]) == 1:
+            parts[1] = '0' + parts[1]
+        date = '-'.join(parts[:2])
+    else:
+        if len(date) == 1:
+            date = '0' + date
+        date = date[:2] + '-' + date[2:]
+    fixed_dates.append(date)
+
+print(fixed_dates)
+
+
+#Standarize Time
+import pandas as pd
+import re
+
+def standardize_time(time_str):
+    if time_str is None:
+        return None
+    
+    time_str = time_str.replace('Uhr', '')
+
+    if time_str.lower() == 'mitternacht':
+        return '00:00:00'
+
+    pattern = r'\b(\d{1,2})[:.]?(\d{2})([:.]?(\d{2}))?\b'
+
+    match = re.search(pattern, time_str)
+    if match:
+        hour = match.group(1).zfill(2)
+        minute = match.group(2).zfill(2)
+        second = match.group(4).zfill(2) if match.group(4) else '00'
+        return f'{hour}:{minute}:{second}'
+
+    return None
+
+
+df['time'] = df['time'].apply(standardize_time)
+
+
+with pd.option_context('display.max_rows', None):
+    print(df['time'])
+
+
+#Merge year date time
+
+from datetime import datetime
+
+date_string = f"{year}-{date} {time}"
+
+datetime_obj = datetime.strptime(date_string, "%Y-%m-%d %I:%M %p")
+
+formatted_time = datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
+
+time = time.replace(" AM", "").replace(" PM", "")
+
+time_ = year + "-" + date + " " + time
+
+print(time_) 
+
