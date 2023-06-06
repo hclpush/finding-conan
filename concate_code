@@ -59,25 +59,19 @@ print(official_case_id_without_duplicates)
 ====> New Header Time_ (ex.: 	2023-03-29 20:10:14)
 #Standarize Date
 
-dates = df['date']
+import pandas as pd
 
-fixed_dates = []
-
-for date in dates:
-    if '.' in date:
-        parts = date.split('.')
-        if len(parts[0]) == 1:
-            parts[0] = '0' + parts[0]
-        if len(parts[1]) == 1:
-            parts[1] = '0' + parts[1]
-        date = '-'.join(parts[:2])
+def format_date(date):
+    parts = str(date).split('.')
+    if len(parts) == 2:
+        day = parts[0].zfill(2)  # Add leading zero if necessary
+        month = parts[1]
+        return f"{day}-{month}"
     else:
-        if len(date) == 1:
-            date = '0' + date
-        date = date[:2] + '-' + date[2:]
-    fixed_dates.append(date)
+        return date
 
-print(fixed_dates)
+df['date'] = df['date'].apply(format_date)
+print(df['date'])
 
 
 #Standarize Time
