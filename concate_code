@@ -25,18 +25,19 @@ concatenated_df.to_csv(output_path, index=False)
 
 #Without Onehotencoder
 
+import pandas as pd
+
 crime_columns = ['Homicide', 'Hate Crime - Disability', 'Hate Crime - Gender', 'Hate Crime - Gender Identity', 'Hate Crime - Religious',
                  'Hate Crime - Sexual orientation', 'Hate Crime - Racial/Ethnicity', 'Hate Crime - Ethnicity', 'Verbal Abuse/Verbal Assault',
                  'Property Damage', 'Drug Offenses', 'General Assault', 'Sexual Assault', 'Sexual Harassment', 'Property Crimes',
                  'Domestic Violence', 'Missing Person', 'Traffic Incident', 'General Assault', 'Unclassified']
 
 for index, row in df.iterrows():
-    # Obtener los tipos de crimen del caso actual
-    types_of_crime = row['type_of_crime'].split(", ")
-    
+    types_of_crime = str(row['type_of_crime']).split(", ")
+
     for column in crime_columns:
         df.loc[index, column] = 0
-    
+
     for crime in types_of_crime:
         if crime in crime_columns:
             df.loc[index, crime] = 1
