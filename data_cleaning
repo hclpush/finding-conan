@@ -1,0 +1,176 @@
+1  Cleaning an Analysing data
+
+# load csv into df
+import pandas as pd
+import re
+import numpy as np
+import os
+
+folder_path = '/Users/mac123/code/finding-conan/open_ai'
+
+#concatenation
+data = []
+for file in os.listdir(folder_path):
+    if file.endswith('.csv'):
+        file_path = os.path.join(folder_path, file)
+        df = pd.read_csv(file_path)
+        data.append(df)
+concatenated_df = pd.concat(data, ignore_index=True)
+
+output_path = '/Users/mac123/code/finding-conan/open_ai/concatenated.csv'
+
+concatenated_df.to_csv(output_path, index=False)
+
+#create categories
+df['unique_case_id'].nunique()
+crime_columns = ['Homicide', 'Hate Crime - Disability', 'Hate Crime - Gender', 'Hate Crime - Gender Identity', 'Hate Crime - Religious',
+                  'Hate Crime - Sexual orientation', 'Hate Crime - Racial/Ethnicity', 'Hate Crime - Ethnicity', 'Verbal Abuse/Verbal Assault',
+                  'Property Damage', 'Drug Offenses', 'General Assault', 'Sexual Assault', 'Sexual Harassment', 'Property Crimes',
+                  'Domestic Violence', 'Missing Person', 'Traffic Incident', 'General Assault', 'Unclassified']
+                  
+                  
+for index, row in df.iterrows():
+    types_of_crime = str(row['type_of_crime']).split(", ")
+    for column in crime_columns:
+        df.loc[index, column] = 0
+    for crime in types_of_crime:
+        if crime in crime_columns:
+            df.loc[index, crime] = 1
+df.to_csv('concatenated2.csv', index=False)
+
+
+#merge Hate Crime - Ethnicity
+
+import numpy as np
+import pandas as pd
+
+conditions = [(df['Hate Crime - Racial/Ethnicity'] == 0) & (df['Hate Crime - Ethnicity'] == 0),
+              (df['Hate Crime - Racial/Ethnicity'] == 1) & (df['Hate Crime - Ethnicity'] == 0),
+              (df['Hate Crime - Racial/Ethnicity'] == 0) & (df['Hate Crime - Ethnicity'] == 1),
+              (df['Hate Crime - Racial/Ethnicity'] == 1) & (df['Hate Crime - Ethnicity'] == 1)]
+choices = [0, 1, 1, 1]
+df['updated_re'] = np.select(conditions, choices)
+
+#df['updated_re'] = np.where(df['Hate Crime - Racial/Ethnicity'] == 1, '1', '0')
+
+#df.drop('Hate Crime - Ethnicity', axis=1, inplace=True)
+
+df
+
+# Quality Assurance
+df.loc[(df['Hate Crime - Racial/Ethnicity'] == 0) & (df['Hate Crime - Ethnicity'] == 1)] 
+
+
+2  Clean the data
+
+# Create a new DataFrame to store the cleaned data
+cleaned_df = df.copy()
+
+# Task 1: Convert 'Mitternacht' to '00:00'
+cleaned_df['time'] = df['time'].replace('Mitternacht', '00.00')
+
+# Task 2: Convert 'kurz nach Mitternacht' to '00:05'
+cleaned_df['time'] = df['time'].replace('kurz nach Mitternacht', '00.05')
+
+# Task 3: Convert 'Nachmittag' to '15:00'
+cleaned_df['time'] = cleaned_df['time'].replace('Nachmittag', '15.00')
+
+# Task 3: Convert 'Nacht' to '00:00', 'Mitta' to 15.00, 'Nach' zu 00.00 and 'Vormi' zu 11.00
+cleaned_df['time'] = cleaned_df['time'].replace('Nacht', '00.00')
+cleaned_df['time'] = cleaned_df['time'].replace('Mitta', '15.00')
+cleaned_df['time'] = cleaned_df['time'].replace('Nach', '00.00')
+cleaned_df['time'] = cleaned_df['time'].replace('Vormi', '11.00')
+
+# Task 4: Remove the second time in a timespan
+cleaned_df['time'] = cleaned_df['time'].apply(lambda x: x.split('-')[0].strip() if isinstance(x, str) and '-' in x else x)
+
+# Task 5: Remove 'Uhr' from the time values
+cleaned_df['time'] = cleaned_df['time'].str.replace(' Uhr', '')
+
+# Task 6 Add '.00' to times without minutes
+cleaned_df['time'] = cleaned_df['time'].apply(lambda x: x + '.00' if isinstance(x, str) and re.match(r'^\d+(:\d+)?$', x) else x)
+
+# Task 7: Remove the second time in a timespan
+cleaned_df['date'] = cleaned_df['date'].apply(lambda x: x.split('-')[0].strip() if isinstance(x, str) and '-' in x else x)
+cleaned_df['date'] = cleaned_df['date'].apply(lambda x: x.split('&')[0].strip() if isinstance(x, str) and '&' in x else x)
+cleaned_df['date'] = cleaned_df['date'].apply(lambda x: x.split(',')[0].strip() if isinstance(x, str) and ',' in x else x)
+
+# Task 8: split and add 0 to date if necessary
+cleaned_df['date'] = cleaned_df['date'].apply(
+    lambda x: ('0' + x) if len(x.split('.')[0]) < 2 
+    else (x.split('.')[0]+'.0'+x.split('.')[1]) if len(x.split('.')[1]) < 2 
+    else ('0'+x.split('.')[0]+'.0'+x.split('.')[1]) if (len(x.split('.')[0]) < 2 and len(x.split('.')[1]) < 2) 
+    else x)
+    
+
+===> Alternative
+#cleaned_df['date'] = pd.to_datetime(cleaned_df['date'], format='%d.%m', errors='coerce')
+# Task 8: split and add 0 date
+#cleaned_df['date'] = cleaned_df['date'].apply(lambda x: ('0' + x) if len(x.split('.')[0]) < 2 else (x.split('.')[0]+'.0'+x.split('.')[1]) if len(x.split('.')[1]) < 2 else ('0'+x.split('.')[0]+'.0'+x.split('.')[1]) if (len(x.split('.')[0]) < 2 and len(x.split('.')[1]) < 2) else x)
+#cleaned_df['date'] = cleaned_df['date'].fillna(pd.to_datetime('00.00', format='%d.%m'))
+
+# Task 9: split and add 0 tim3
+cleaned_df['time'] = cleaned_df['time'].apply(lambda x: ('0' + x) if len(x.split('.')) > 1 and len(x.split('.')[0]) < 2 else (x.split('.')[0]+'.0'+x.split('.')[1]) if len(x.split('.')) > 1 and len(x.split('.')[1]) < 2 else ('0'+x.split('.')[0]+'.0'+x.split('.')[1]) if len(x.split('.')) > 1 and len(x.split('.')[0]) < 2 and len(x.split('.')[1]) < 2 else x)
+
+# Check status
+cleaned_df['unique_case_id'].nunique()
+cleaned_df.head(10)
+
+
+2.1  Timestamp and date
+
+# count number of unique data
+cleaned_df['official_case_id'].nunique()
+
+#Convert 'year' and 'date' into 'date' column with format 'yyyy-mm-dd'
+# Convert 'time' into 'timestamp' column with format 'hh:mm:ss'
+cleaned_df['timestamp'] = pd.to_datetime(cleaned_df['time'], format='%H.%M', errors='coerce').dt.strftime('%H:%M:%S')
+
+# Replace "." with "-" in the 'date' column
+cleaned_df['date'] = cleaned_df['date'].str.replace('.', '-')
+
+# Create a new column 'combined_date' by combining 'year' and 'date'
+cleaned_df['combined_date'] = cleaned_df.apply(lambda row: f"{row['year']}-{row['date']}", axis=1)
+
+
+# Copy Dataframe
+final_df = cleaned_df.copy()
+
+# drop notneeded columns: official_case_id
+final_df = final_df.drop(columns=['official_case_id', 'year', 'date', 'time'])
+
+final_df = final_df.rename(columns={"combined_date": "date"})
+
+
+
+3  Add the missing "n"
+
+for col in final_df:
+    print(final_df['location'].unique())
+    
+import re
+# List of words to modify
+words_to_modify = ['Gesundbrunne', 'Neuköll', 'Tiergarte']
+
+# Define the regular expression pattern
+pattern = r'\b(' + '|'.join(words_to_modify) + r')\b'
+
+# Update the values in the 'location' column using regular expressions
+final_df['location'] = final_df['location'].apply(lambda x: re.sub(pattern, r'\1n', x))
+
+# Print the updated dataframe
+final_df.head(10)
+
+for col in final_df:
+    print(final_df['location'])
+    
+
+4  Remove U-Bahnhof
+# Remove 'U-Bahnhof' from values in the 'location' column
+final_df['location'] = final_df['location'].str.replace('U-Bahnhof', '')
+final_df['location'] = final_df['location'].str.replace('S-Bahnhof', '')
+final_df['location'] = final_df['location'].str.replace('U-Bahn', '')
+final_df['location'] = final_df['location'].str.replace('S-Bahn', '')
+
+5  Save Cleaned data in new CSV
+final_df.to_csv("final-crime-data.csv")
