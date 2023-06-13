@@ -1,0 +1,8 @@
+unique_case_id,official_case_id,type_of_crime,location,year,day,time,victim_sex,offender_sex,number_of_victims,number_of_offenders
+000001_1308099,1308099,"Property Damage, General Assault",Friedrichstraße,2023,24.03,17.15 Uhr,Unknown,Unknown,Unknown,5
+000002_1252557,1252557,"Property Crimes, Theft",Tempelhof-Schöneberg,2022,11.10,1.40 Uhr,Female,Male,1,3
+000003_1258859,1258859,"General Assault, Property Crimes, Verbal Abuse",Hasenheide,2022,27.10,21.15 Uhr,Male,Male,1,2
+000004_1318975,1318975,"Property Crimes, General Assault",Tiergarten,2023,30.04,0.50 Uhr,Unknown,Male,Unknown,3
+000005_1234914,1234914,"Property Crimes, General Assault","Martin-Luther-Straße, Schöneberg, Wilmersdorf",2022,14.08,17.30 Uhr,Male,Male,1,1
+000006_1249209,1249209,"Property Damage, Arson","Paul-Zobel-Straße, Lichtenberg",2022,28.09,kurz nach Mitternacht,Unknown,Unknown,0,Unknown
+000007_1301345,1301345,"General Assault, Homicide",Arnimplatz,2023,04.03,22 Uhr,Male,Male,1,1
