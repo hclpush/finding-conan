@@ -14,14 +14,18 @@ from datetime import datetime
 import numpy as np
 # Load data with longitude and latitude information into a pandas DataFrame
 
-print(f"CWD: {os.getcwd()}")
 
 st.header("Finding Conan")
 
-image = Image.open('finding-conan/frontend/streamlit/conanimage.PNG')
+script_path = os.path.dirname(__file__)
+
+pna_file = script_path+'/conanimage.PNG'
+image = Image.open(pna_file)
 
 st.image(image)
-data = pd.read_csv('finding-conan/frontend/streamlit/final_table.csv')
+
+csv_file = script_path+'/final_table.csv'
+data = pd.read_csv(csv_file)
 
 default_color = 'black'
 crime_types_color = {
