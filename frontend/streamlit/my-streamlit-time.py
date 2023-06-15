@@ -152,7 +152,7 @@ if location:
         lat=[entered_lat],
         lon=[entered_lon],
         mode='markers',
-        marker={'size': 10, 'color': 'blue'}
+        marker={'size': 10, 'color': 'Red'}
     ))
 
     st.plotly_chart(fig)
