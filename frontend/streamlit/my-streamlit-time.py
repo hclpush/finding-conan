@@ -16,9 +16,9 @@ import numpy as np
 # Load data with longitude and latitude information into a pandas DataFrame
 
 
-st.header("Where's Conan?")
+st.header("Finding Conan")
 
-image = Image.open('/Users/yenshan/Desktop/finding-conan/frontend/streamlit/conanimage.PNG')
+image = Image.open('conanimage.PNG')
 
 st.image(image)
 data = pd.read_csv(
