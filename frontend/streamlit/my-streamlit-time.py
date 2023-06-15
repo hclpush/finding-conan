@@ -18,10 +18,10 @@ import numpy as np
 
 st.header("Finding Conan")
 
-image = Image.open('hclpush/finding-conan/frontend/streamlit/conanimage.PNG')
+image = Image.open('finding-conan/frontend/streamlit/conanimage.PNG')
 
 st.image(image)
-data = pd.read_csv('hclpush/finding-conan/frontend/streamlit/final_table.csv')
+data = pd.read_csv('finding-conan/frontend/streamlit/final_table.csv')
 
 default_color = 'black'
 crime_types_color = {
