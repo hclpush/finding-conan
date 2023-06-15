@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -15,6 +14,7 @@ from datetime import datetime
 import numpy as np
 # Load data with longitude and latitude information into a pandas DataFrame
 
+print(f"CWD: {os.getcwd()}")
 
 st.header("Finding Conan")
 
