@@ -16,12 +16,13 @@ import numpy as np
 
 st.header("Where's Conan?")
 
+print(os.path)
 
-image = Image.open('/Users/yenshan/code/hclpush/finding-conan/frontend/.streamlit/conanimage.PNG')
+image = Image.open('./conanimage.PNG')
 
 st.image(image)
 data = pd.read_csv(
-    '/Users/yenshan/code/hclpush/finding-conan/frontend/.streamlit/berlin_final_table.csv')
+    './berlin_final_table.csv')
 
 def assign_color(row):
     for crime_type in row.index:
@@ -110,11 +111,11 @@ fig.update_traces(marker=dict(size=radius))
 
 
 # Customize the marker colors based on the selected options
-for i, option in enumerate(selected_crime_type):
-    color = crime_types_color[option]
-    fig.data[i].marker.color = [color] * len(fig.data[i].lat)
+# for i, option in enumerate(selected_crime_type):
+#     color = crime_types_color[option]
+#     fig.data[i].marker.color = [color] * len(fig.data[i].lat)
 
-
+filtered_data['color'] = filtered_data.get('color', 'green')  # fallback
 
 address = st.text_input('Where you are going', '')
 
@@ -123,7 +124,15 @@ st.write('Map of crime incidents in Berlin')
 
 
 geolocator = Nominatim(user_agent='my_geocoder')
-location = geolocator.geocode(address)
+
+location = geolocator.geocode(address, country_codes='de')
+
+if location:
+    st.write(f"Geocoded address: {location.address}")
+    st.write(f"Latitude: {location.latitude}, Longitude: {location.longitude}")
+else:
+    st.warning("Address could not be geocoded.")
+
 
 if location:
     entered_lat = location.latitude
@@ -139,8 +148,7 @@ if location:
         marker={'size': 10, 'color': 'blue'}
     ))
 
-    st.plotly_chart(fig)
-
+st.plotly_chart(fig)
 
 
 # Build a legend
