@@ -16,10 +16,10 @@ This project transforms unstructured text into actionable geospatial insights th
 ```mermaid
 graph LR
     A[Berlin Police Website] -->|BeautifulSoup Scraping| B(Raw Text Reports)
-    B -->|LLM Processing| C{Structured Data}
+    B -->|LLM Processing| C(Structured Data)
     C -->|Pandas & NumPy| D[Cleaned Dataset]
-    D -->|Streamlit| E[Interactive Dashboard]
-
+    D -->|One-Hot Encoding| E[Ready for Viz]
+    E -->|Rendered in| F[Streamlit Dashboard]
 ```
 
 ### 1. Data Collection
