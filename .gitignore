@@ -4,3 +4,4 @@ prompt engineering - yen.ipynb
 .DS_Store
 
 raw-data/
+.venv/
